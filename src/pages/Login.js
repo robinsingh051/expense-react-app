@@ -2,54 +2,47 @@ import { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import ErrorContext from "../store/error-context";
+import AuthContext from "../store/auth-context";
 
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const Register = () => {
+const Login = () => {
   const history = useHistory();
 
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
-  const confirmPasswordInputRef = useRef();
-  const nameInputRef = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const errorCtx = useContext(ErrorContext);
+  const authCtx = useContext(AuthContext);
 
   const submitHandler = async (event) => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
-    const enteredConfirmPassword = confirmPasswordInputRef.current.value;
-    const enteredName = nameInputRef.current.value;
 
-    if (enteredPassword !== enteredConfirmPassword) {
-      console.log("enter same password");
-      errorCtx.showError("please enter same password");
-    } else {
-      setIsLoading(true);
-      const newDetails = {
-        name: enteredName,
-        email: enteredEmail,
-        password: enteredPassword,
-      };
+    setIsLoading(true);
+    const userDetails = {
+      email: enteredEmail,
+      password: enteredPassword,
+    };
 
-      console.log(newDetails);
-      try {
-        const response = await axios.post(
-          "http://localhost:4000/users/signUp",
-          newDetails
-        );
-        console.log(response.data);
-        history.replace("/login");
-      } catch (err) {
-        let errorMessage = "User Already exists";
-        errorCtx.showError(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
+    console.log(userDetails);
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/users/logIn",
+        userDetails
+      );
+      console.log(response.data.token);
+      authCtx.login(response.data.token);
+      history.replace("/home");
+    } catch (err) {
+      let errorMessage = "User doesn't exist";
+      errorCtx.showError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,19 +55,8 @@ const Register = () => {
         }}
       >
         <Card.Body>
-          <h5>Register</h5>
+          <h5>Login</h5>
           <Form onSubmit={submitHandler}>
-            <Form.Group controlId="formName" className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter your name"
-                name="name"
-                ref={nameInputRef}
-                required
-              />
-            </Form.Group>
-
             <Form.Group controlId="formEmail" className="mb-3">
               <Form.Label>Email Address</Form.Label>
               <Form.Control
@@ -97,28 +79,18 @@ const Register = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formConfirmPassword" className="mb-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="confirm password"
-                name="password"
-                ref={confirmPasswordInputRef}
-                required
-              />
-            </Form.Group>
             {!isLoading && (
               <Button variant="primary" type="submit">
-                Submit
+                Log In
               </Button>
             )}
             {isLoading && <p>Sending Request</p>}
           </Form>
         </Card.Body>
-        <Link to="/login">Already Have Account?</Link>
+        <Link to="/register">New User?</Link>
       </Card>
     </Container>
   );
 };
 
-export default Register;
+export default Login;
