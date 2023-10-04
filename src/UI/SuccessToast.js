@@ -1,23 +1,23 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Toast } from "react-bootstrap";
-import ErrorContext from "../store/error-context";
+import SuccessContext from "../store/success-context";
 
-const ErrorToast = () => {
-  const { error, hideError } = useContext(ErrorContext);
-  const [show, setShow] = useState(!!error);
+const SuccessToast = () => {
+  const { text, hideText } = useContext(SuccessContext);
+  const [show, setShow] = useState(!!text);
 
   useEffect(() => {
-    setShow(!!error);
-  }, [error]);
+    setShow(!!text);
+  }, [text]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(false);
-      hideError();
+      hideText();
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [error, hideError]);
+  }, [text, hideText]);
 
   return (
     <div
@@ -33,7 +33,7 @@ const ErrorToast = () => {
         onClose={() => setShow(false)}
         autohide
         className="text-white rounded"
-        style={{ backgroundColor: "red" }}
+        style={{ backgroundColor: "green" }}
       >
         <Toast.Body
           style={{
@@ -42,11 +42,11 @@ const ErrorToast = () => {
             textTransform: "uppercase",
           }}
         >
-          {error}
+          {text}
         </Toast.Body>
       </Toast>
     </div>
   );
 };
 
-export default ErrorToast;
+export default SuccessToast;

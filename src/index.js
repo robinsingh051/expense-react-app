@@ -10,14 +10,17 @@ import { AuthContextProvider } from "./store/auth-context";
 import "../node_modules/react-bootstrap/dist/react-bootstrap";
 import "../node_modules/bootstrap/dist/css/bootstrap.css";
 import { ErrorContextProvider } from "./store/error-context";
+import { SuccessContextProvider } from "./store/success-context";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <ErrorContextProvider>
-      <AuthContextProvider>
-        <App />
-      </AuthContextProvider>
+      <SuccessContextProvider>
+        <AuthContextProvider>
+          <App />
+        </AuthContextProvider>
+      </SuccessContextProvider>
     </ErrorContextProvider>
   </BrowserRouter>
 );

@@ -12,7 +12,6 @@ const Register = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordInputRef = useRef();
-  const nameInputRef = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +22,6 @@ const Register = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
     const enteredConfirmPassword = confirmPasswordInputRef.current.value;
-    const enteredName = nameInputRef.current.value;
 
     if (enteredPassword !== enteredConfirmPassword) {
       console.log("enter same password");
@@ -31,21 +29,23 @@ const Register = () => {
     } else {
       setIsLoading(true);
       const newDetails = {
-        name: enteredName,
         email: enteredEmail,
         password: enteredPassword,
+        returnSecureToken: true,
       };
 
       console.log(newDetails);
       try {
         const response = await axios.post(
-          "http://localhost:4000/users/signUp",
+          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_API_KEY}`,
           newDetails
         );
         console.log(response.data);
         history.replace("/login");
       } catch (err) {
-        let errorMessage = "User Already exists";
+        let errorMessage = "Authentication failed";
+        if (err.response.data.error && err.response.data.error.message)
+          errorMessage = err.response.data.error.message;
         errorCtx.showError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -55,68 +55,73 @@ const Register = () => {
 
   return (
     <Container className="d-flex justify-content-center align-items-center mt-5">
-      <Card
+      <Container
+        className="shadow"
         style={{
-          width: "20rem",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          width: "25rem",
+          padding: ".5rem",
         }}
       >
-        <Card.Body>
-          <h5>Register</h5>
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId="formName" className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter your name"
-                name="name"
-                ref={nameInputRef}
-                required
-              />
-            </Form.Group>
+        <Card>
+          <Card.Body className="text-center">
+            <h5 style={{ marginBottom: 9 }}>Register</h5>
+            <Form onSubmit={submitHandler}>
+              <Form.Group controlId="formEmail" className="mb-3">
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter your email"
+                  name="email"
+                  required
+                  ref={emailInputRef}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="formEmail" className="mb-3">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter your email"
-                name="email"
-                ref={emailInputRef}
-                required
-              />
-            </Form.Group>
+              <Form.Group controlId="formPassword" className="mb-3">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Enter your password"
+                  name="password"
+                  required
+                  ref={passwordInputRef}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="formPassword" className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your password"
-                name="password"
-                ref={passwordInputRef}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formConfirmPassword" className="mb-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="confirm password"
-                name="password"
-                ref={confirmPasswordInputRef}
-                required
-              />
-            </Form.Group>
-            {!isLoading && (
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            )}
-            {isLoading && <p>Sending Request</p>}
-          </Form>
-        </Card.Body>
-        <Link to="/login">Already Have Account?</Link>
-      </Card>
+              <Form.Group controlId="formConfirmPassword" className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Confirm password"
+                  name="password"
+                  required
+                  ref={confirmPasswordInputRef}
+                />
+              </Form.Group>
+              {isLoading && <p>Sending Request</p>}
+              {!isLoading && (
+                <Button variant="primary" type="submit">
+                  Register
+                </Button>
+              )}
+            </Form>
+          </Card.Body>
+        </Card>
+        <Button
+          variant="Link"
+          as={Link}
+          to="/login"
+          style={{
+            display: "block",
+            width: "100%",
+            textAlign: "center",
+            marginTop: "10px",
+            backgroundColor: "#e8f7f0",
+          }}
+        >
+          Already Have an Account?
+        </Button>
+      </Container>
     </Container>
   );
 };

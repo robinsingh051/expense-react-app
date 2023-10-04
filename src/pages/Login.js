@@ -32,14 +32,16 @@ const Login = () => {
     console.log(userDetails);
     try {
       const response = await axios.post(
-        "http://localhost:4000/users/logIn",
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_API_KEY}`,
         userDetails
       );
-      console.log(response.data.token);
-      authCtx.login(response.data.token);
+      console.log(response.data.idToken);
+      authCtx.login(response.data.idToken);
       history.replace("/home");
     } catch (err) {
       let errorMessage = "User doesn't exist";
+      if (err.response.data.error && err.response.data.error.message)
+        errorMessage = err.response.data.error.message;
       errorCtx.showError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -48,47 +50,63 @@ const Login = () => {
 
   return (
     <Container className="d-flex justify-content-center align-items-center mt-5">
-      <Card
+      <Container
+        className="shadow"
         style={{
-          width: "20rem",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          width: "25rem",
+          padding: ".5rem",
         }}
       >
-        <Card.Body>
-          <h5>Login</h5>
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId="formEmail" className="mb-3">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter your email"
-                name="email"
-                ref={emailInputRef}
-                required
-              />
-            </Form.Group>
+        <Card>
+          <Card.Body className="text-center">
+            <h5 style={{ marginBottom: 9 }}>Log In</h5>
+            <Form onSubmit={submitHandler}>
+              <Form.Group controlId="formEmail" className="mb-3">
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter your email"
+                  name="email"
+                  required
+                  ref={emailInputRef}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="formPassword" className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your password"
-                name="password"
-                ref={passwordInputRef}
-                required
-              />
-            </Form.Group>
+              <Form.Group controlId="formPassword" className="mb-3">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Enter your password"
+                  name="password"
+                  required
+                  ref={passwordInputRef}
+                />
+              </Form.Group>
 
-            {!isLoading && (
-              <Button variant="primary" type="submit">
-                Log In
-              </Button>
-            )}
-            {isLoading && <p>Sending Request</p>}
-          </Form>
-        </Card.Body>
-        <Link to="/register">New User?</Link>
-      </Card>
+              {isLoading && <p>Sending Request</p>}
+              {!isLoading && (
+                <Button variant="primary" type="submit">
+                  Login
+                </Button>
+              )}
+            </Form>
+          </Card.Body>
+        </Card>
+        <Button
+          variant="Link"
+          as={Link}
+          to="/register"
+          style={{
+            display: "block",
+            width: "100%",
+            textAlign: "center",
+            marginTop: "10px",
+            backgroundColor: "#e8f7f0",
+          }}
+        >
+          New User?
+        </Button>
+      </Container>
     </Container>
   );
 };

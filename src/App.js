@@ -6,13 +6,17 @@ import Register from "./pages/Register";
 import ErrorToast from "./UI/ErrorToast";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Header from "./components/Header";
+import Profile from "./pages/Profile";
+import SuccessToast from "./UI/SuccessToast";
 
 function App() {
   const authCtx = useContext(AuthContext);
-  console.log(authCtx.isLoggedIn);
   return (
     <>
       <ErrorToast />
+      <SuccessToast />
+      <Header />
       <Switch>
         <Route path="/" exact>
           {authCtx.isLoggedIn && <Redirect to="/home" />}
@@ -27,6 +31,10 @@ function App() {
         </Route>
         <Route path="/register">
           <Register />
+        </Route>
+        <Route path="/profile">
+          {authCtx.isLoggedIn && <Profile />}
+          {!authCtx.isLoggedIn && <Redirect to="/login" />}
         </Route>
       </Switch>
     </>
