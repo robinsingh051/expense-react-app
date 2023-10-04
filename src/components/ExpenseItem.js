@@ -1,11 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
+import axios from "axios";
+import ErrorContext from "../store/error-context";
+import SuccessContext from "../store/success-context";
 import { Card, Button } from "react-bootstrap";
 
 const ExpenseItem = (props) => {
+  const errorCtx = useContext(ErrorContext);
+  const successCtx = useContext(SuccessContext);
+  const deleteData = async () => {
+    try {
+      await axios.delete(
+        `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${props.id}.json`
+      );
+    } catch (err) {
+      console.log(err);
+      errorCtx.showError("something went wrong");
+    }
+  };
   const onEdit = () => {
+    deleteData();
     props.onEdit(props.id);
   };
   const onDelete = () => {
+    deleteData();
+    successCtx.showText("Expense deleted");
     props.onDelete(props.id);
   };
   return (

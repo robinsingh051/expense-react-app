@@ -15,7 +15,6 @@ const Home = (props) => {
         const res = await axios.get(
           `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses.json`
         );
-        console.log(res.data);
         const loadedExpenses = [];
         for (const key in res.data) {
           loadedExpenses.push({
