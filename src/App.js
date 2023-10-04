@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import ErrorToast from "./UI/ErrorToast";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Forget from "./pages/Forget";
 import Header from "./components/Header";
 import Profile from "./pages/Profile";
 import SuccessToast from "./UI/SuccessToast";
@@ -36,6 +37,11 @@ function App() {
           {authCtx.isLoggedIn && <Profile />}
           {!authCtx.isLoggedIn && <Redirect to="/login" />}
         </Route>
+        {!authCtx.isLoggedIn && (
+          <Route path="/forget">
+            <Forget />
+          </Route>
+        )}
       </Switch>
     </>
   );

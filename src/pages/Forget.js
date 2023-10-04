@@ -2,44 +2,42 @@ import { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import ErrorContext from "../store/error-context";
-import AuthContext from "../store/auth-context";
 
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import SuccessContext from "../store/success-context";
 
-const Login = () => {
+const Forget = () => {
   const history = useHistory();
 
   const emailInputRef = useRef();
-  const passwordInputRef = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const errorCtx = useContext(ErrorContext);
-  const authCtx = useContext(AuthContext);
+  const successCtx = useContext(SuccessContext);
 
   const submitHandler = async (event) => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
-    const enteredPassword = passwordInputRef.current.value;
 
     setIsLoading(true);
     const userDetails = {
+      requestType: "PASSWORD_RESET",
       email: enteredEmail,
-      password: enteredPassword,
     };
 
     console.log(userDetails);
     try {
       const response = await axios.post(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_API_KEY}`,
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${process.env.REACT_APP_API_KEY}`,
         userDetails
       );
-      console.log(response.data.idToken);
-      authCtx.login(response.data.idToken);
-      history.replace("/home");
+      console.log(response.data);
+      successCtx.showText("Password reset link is sent in email");
+      history.push("/login");
     } catch (err) {
-      let errorMessage = "User doesn't exist";
+      let errorMessage = "Something Went wrong";
       if (err.response.data.error && err.response.data.error.message)
         errorMessage = err.response.data.error.message;
       errorCtx.showError(errorMessage);
@@ -59,7 +57,7 @@ const Login = () => {
       >
         <Card>
           <Card.Body className="text-center">
-            <h5 style={{ marginBottom: 9 }}>Log In</h5>
+            <h5 style={{ marginBottom: 9 }}>Forget Password</h5>
             <Form onSubmit={submitHandler}>
               <Form.Group controlId="formEmail" className="mb-3">
                 <Form.Label>Email Address</Form.Label>
@@ -72,36 +70,10 @@ const Login = () => {
                 />
               </Form.Group>
 
-              <Form.Group controlId="formPassword" className="mb-3">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Enter your password"
-                  name="password"
-                  required
-                  ref={passwordInputRef}
-                />
-              </Form.Group>
-
-              <Button
-                variant="Link"
-                as={Link}
-                to="/forget"
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "center",
-                  marginTop: "1rem",
-                  marginBottom: "1rem",
-                }}
-              >
-                Forget Password?
-              </Button>
-
               {isLoading && <p>Sending Request</p>}
               {!isLoading && (
                 <Button variant="primary" type="submit">
-                  Login
+                  Send Email
                 </Button>
               )}
             </Form>
@@ -110,7 +82,7 @@ const Login = () => {
         <Button
           variant="Link"
           as={Link}
-          to="/register"
+          to="/login"
           style={{
             display: "block",
             width: "100%",
@@ -119,11 +91,11 @@ const Login = () => {
             backgroundColor: "#e8f7f0",
           }}
         >
-          New User?
+          Back to Login?
         </Button>
       </Container>
     </Container>
   );
 };
 
-export default Login;
+export default Forget;
