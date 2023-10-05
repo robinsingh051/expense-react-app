@@ -1,18 +1,16 @@
-import React, { useContext, useRef, useState } from "react";
-import ErrorContext from "../store/error-context";
-import AuthContext from "../store/auth-context";
+import React, { useRef, useState } from "react";
 
 import axios from "axios";
 import { Card, Form, Button, Container } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const UpdateProfile = (props) => {
+  const token = useSelector((state) => state.auth.token);
   const [isLoading, setIsLoading] = useState(false);
 
   const nameInputRef = useRef();
   const profilePhotoUrlRef = useRef();
-
-  const errorCtx = useContext(ErrorContext);
-  const authCtx = useContext(AuthContext);
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -21,7 +19,7 @@ const UpdateProfile = (props) => {
 
     setIsLoading(true);
     const userDetails = {
-      idToken: authCtx.token,
+      idToken: token,
       displayName: enteredName,
       photoUrl: enteredPhotoUrl,
       returnSecureToken: false,
@@ -39,7 +37,7 @@ const UpdateProfile = (props) => {
       let errorMessage = "Something went wrong";
       if (err.response.data.error && err.response.data.error.message)
         errorMessage = err.response.data.error.message;
-      errorCtx.showError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

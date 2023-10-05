@@ -1,20 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import axios from "axios";
-import ErrorContext from "../store/error-context";
-import SuccessContext from "../store/success-context";
 import { Card, Button } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const ExpenseItem = (props) => {
-  const errorCtx = useContext(ErrorContext);
-  const successCtx = useContext(SuccessContext);
+  const email = useSelector((state) => state.auth.email);
   const deleteData = async () => {
     try {
       await axios.delete(
-        `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${props.id}.json`
+        `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${email}/expenses/${props.id}.json`
       );
     } catch (err) {
       console.log(err);
-      errorCtx.showError("something went wrong");
+      toast.error("something went wrong");
     }
   };
   const onEdit = () => {
@@ -23,7 +22,7 @@ const ExpenseItem = (props) => {
   };
   const onDelete = () => {
     deleteData();
-    successCtx.showText("Expense deleted");
+    toast.success("Expense deleted");
     props.onDelete(props.id);
   };
   return (

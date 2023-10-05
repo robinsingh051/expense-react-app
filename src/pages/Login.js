@@ -1,13 +1,15 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import ErrorContext from "../store/error-context";
-import AuthContext from "../store/auth-context";
-
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/auth";
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const history = useHistory();
 
   const emailInputRef = useRef();
@@ -15,8 +17,9 @@ const Login = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const errorCtx = useContext(ErrorContext);
-  const authCtx = useContext(AuthContext);
+  function removeSpecialCharacters(email) {
+    return email.replace(/[.@]/g, "");
+  }
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -29,20 +32,24 @@ const Login = () => {
       password: enteredPassword,
     };
 
-    console.log(userDetails);
     try {
       const response = await axios.post(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_API_KEY}`,
         userDetails
       );
       console.log(response.data.idToken);
-      authCtx.login(response.data.idToken);
+      dispatch(
+        authActions.login({
+          token: response.data.idToken,
+          email: removeSpecialCharacters(enteredEmail),
+        })
+      );
       history.replace("/home");
     } catch (err) {
       let errorMessage = "User doesn't exist";
       if (err.response.data.error && err.response.data.error.message)
         errorMessage = err.response.data.error.message;
-      errorCtx.showError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

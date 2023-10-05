@@ -1,11 +1,10 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import ErrorContext from "../store/error-context";
 
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import SuccessContext from "../store/success-context";
+import toast from "react-hot-toast";
 
 const Forget = () => {
   const history = useHistory();
@@ -13,9 +12,6 @@ const Forget = () => {
   const emailInputRef = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const errorCtx = useContext(ErrorContext);
-  const successCtx = useContext(SuccessContext);
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -34,13 +30,13 @@ const Forget = () => {
         userDetails
       );
       console.log(response.data);
-      successCtx.showText("Password reset link is sent in email");
+      toast.success("Password reset link is sent in email");
       history.push("/login");
     } catch (err) {
       let errorMessage = "Something Went wrong";
       if (err.response.data.error && err.response.data.error.message)
         errorMessage = err.response.data.error.message;
-      errorCtx.showError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

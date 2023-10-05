@@ -3,17 +3,24 @@ import { Button, Container } from "react-bootstrap";
 import AddExpenseForm from "../components/AddExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import axios from "axios";
+import Loading from "../UI/Loading";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { expensesActions } from "../store/expenses";
 
 const Home = (props) => {
+  const [loading, setLoading] = useState(true);
+  const items = useSelector((state) => state.expenses.items);
+  const email = useSelector((state) => state.auth.email);
+  const dispatch = useDispatch();
   const [expense, setExpense] = useState(null);
-  const [items, setItem] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const getExpenses = async () => {
       try {
         const res = await axios.get(
-          `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses.json`
+          `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${email}/expenses.json`
         );
         const loadedExpenses = [];
         for (const key in res.data) {
@@ -24,13 +31,15 @@ const Home = (props) => {
             desc: res.data[key].desc,
           });
         }
-        setItem(loadedExpenses);
+        setLoading(false);
+        dispatch(expensesActions.setExpenses({ items: loadedExpenses }));
       } catch (err) {
         console.log(err);
+        toast.error("Unable to fetch expenses");
       }
     };
     getExpenses();
-  }, []);
+  }, [email]);
 
   const showFormHandler = () => {
     setShowForm(true);
@@ -43,10 +52,7 @@ const Home = (props) => {
   };
 
   const submitHandler = (expense) => {
-    // console.log(expense);
-    setItem((prevState) => {
-      return [...prevState, expense];
-    });
+    dispatch(expensesActions.add({ item: expense }));
   };
 
   const editHandler = (id) => {
@@ -55,18 +61,14 @@ const Home = (props) => {
       setExpense(editedExpense);
       setShowForm(true);
     }
-    setItem((prevState) => {
-      const updatedItems = prevState.filter((item) => item.id !== id);
-      return updatedItems;
-    });
+    dispatch(expensesActions.remove({ id: id }));
   };
 
   const deleteHandler = (id) => {
-    setItem((prevState) => {
-      const updatedItems = prevState.filter((item) => item.id !== id);
-      return updatedItems;
-    });
+    dispatch(expensesActions.remove({ id: id }));
   };
+
+  if (loading) return <Loading />;
 
   return (
     <>
@@ -88,11 +90,7 @@ const Home = (props) => {
           />
         )}
       </Container>
-      <ExpenseList
-        onDelete={deleteHandler}
-        onEdit={editHandler}
-        items={items}
-      />
+      <ExpenseList onDelete={deleteHandler} onEdit={editHandler} />
     </>
   );
 };

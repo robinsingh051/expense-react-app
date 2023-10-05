@@ -1,17 +1,17 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import axios from "axios";
-import ErrorContext from "../store/error-context";
-import AuthContext from "../store/auth-context";
-import SuccessContext from "../store/success-context";
 
 import ProfileData from "../components/ProfileData";
 import UpdateProfile from "../components/UpdateProfile";
 import Loading from "../UI/Loading";
 import { Button, Container } from "react-bootstrap";
 import PopUp from "../UI/PopUp";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  const token = useSelector((state) => state.auth.token);
   const [name, setName] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
 
@@ -27,17 +27,13 @@ const Profile = () => {
     setShowUpdateForm(false);
   };
 
-  const errorCtx = useContext(ErrorContext);
-  const authCtx = useContext(AuthContext);
-  const successCtx = useContext(SuccessContext);
-
   useEffect(() => {
     const getData = async () => {
       try {
         const res = await axios.post(
           `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.REACT_APP_API_KEY}`,
           {
-            idToken: authCtx.token,
+            idToken: token,
           }
         );
         if (res.data.users[0].displayName || res.data.users[0].photoUrl) {
@@ -54,7 +50,7 @@ const Profile = () => {
           setDataAvailable(false);
         }
       } catch (err) {
-        errorCtx.showError("something went wrong");
+        toast.error("something went wrong");
         console.log(err);
       }
     };
@@ -75,15 +71,15 @@ const Profile = () => {
         `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${process.env.REACT_APP_API_KEY}`,
         {
           requestType: "VERIFY_EMAIL",
-          idToken: authCtx.token,
+          idToken: token,
         }
       );
-      successCtx.showText(
+      toast.success(
         "Check your email, you might have recieved a verification link."
       );
     } catch (err) {
       console.log(err.response.data.error.errors[0].message);
-      errorCtx.showError("something went wrong");
+      toast.error("something went wrong");
     }
   };
 

@@ -1,12 +1,11 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button, Form, Card, Container } from "react-bootstrap";
 import axios from "axios";
-import SuccessContext from "../store/success-context";
-import ErrorContext from "../store/error-context";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const AddExpenseForm = (props) => {
-  const successCtx = useContext(SuccessContext);
-  const errorCtx = useContext(ErrorContext);
+  const email = useSelector((state) => state.auth.email);
 
   const amountInputRef = useRef();
   const descInputRef = useRef();
@@ -32,16 +31,16 @@ const AddExpenseForm = (props) => {
     };
     try {
       const response = await axios.post(
-        `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses.json`,
+        `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${email}/expenses.json`,
         expense
       );
-      successCtx.showText("Expense added successfully");
+      toast.success("Expense added successfully");
       props.onSubmit({ ...expense, id: response.data.name });
       amountInputRef.current.value = "";
       descInputRef.current.value = "";
     } catch (err) {
       console.log(err);
-      errorCtx.showError("unable to add expense");
+      toast.error("unable to add expense");
     }
   };
 

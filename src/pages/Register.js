@@ -1,10 +1,10 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import ErrorContext from "../store/error-context";
 
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const history = useHistory();
@@ -15,8 +15,6 @@ const Register = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const errorCtx = useContext(ErrorContext);
-
   const submitHandler = async (event) => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
@@ -25,7 +23,7 @@ const Register = () => {
 
     if (enteredPassword !== enteredConfirmPassword) {
       console.log("enter same password");
-      errorCtx.showError("please enter same password");
+      toast.error("please enter same password");
     } else {
       setIsLoading(true);
       const newDetails = {
@@ -46,7 +44,7 @@ const Register = () => {
         let errorMessage = "Authentication failed";
         if (err.response.data.error && err.response.data.error.message)
           errorMessage = err.response.data.error.message;
-        errorCtx.showError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }

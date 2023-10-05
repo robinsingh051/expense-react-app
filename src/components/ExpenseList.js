@@ -1,8 +1,11 @@
 import React from "react";
 import ExpenseItem from "./ExpenseItem";
+import { useSelector } from "react-redux";
 
 const ExpenseList = (props) => {
-  const expenses = props.items.map((item) => {
+  const items = useSelector((state) => state.expenses.items);
+  console.log(items);
+  const expenses = items.map((item) => {
     return (
       <ExpenseItem
         onDelete={props.onDelete}
