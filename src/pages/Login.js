@@ -49,6 +49,7 @@ const Login = () => {
           enteredEmail
         )}/premium.json`
       );
+      console.log(res.data);
       if (res.data) {
         dispatch(authActions.setPremium(true));
       }
