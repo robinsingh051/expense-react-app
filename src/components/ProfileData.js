@@ -1,5 +1,5 @@
 import React from "react";
-import { BsCheck } from "react-icons/bs";
+import { FaCheckCircle } from "react-icons/fa";
 import { Image } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
@@ -9,7 +9,7 @@ const ProfileData = (props) => {
   if (props.isVerified)
     verified = (
       <>
-        <BsCheck size={24} color="blue" />
+        <FaCheckCircle size={35} color="blue" />
       </>
     );
   return (
@@ -18,12 +18,12 @@ const ProfileData = (props) => {
         src={props.photoUrl}
         alt="Profile Photo"
         roundedCircle
-        style={{ width: "150px", height: "150px" }}
+        style={{ width: "150px", height: "150px", marginBottom: "2rem" }}
       />
       <h1>
         {props.name} {verified}
       </h1>
-      {isPremium && <h2>(Premium User)</h2>}
+      {isPremium && <h4>(Premium User)</h4>}
     </div>
   );
 };
