@@ -4,6 +4,7 @@ const authInitialState = {
   token: "",
   email: "",
   isLoggedIn: false,
+  isPremium: false,
 };
 
 const authSlice = createSlice({
@@ -23,6 +24,9 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.token = "";
       state.email = "";
+    },
+    setPremium(state, action) {
+      state.isPremium = action.payload;
     },
   },
 });

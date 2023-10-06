@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 const ExpenseItem = (props) => {
+  const darkMode = useSelector((state) => state.darkMode.darkMode);
   const email = useSelector((state) => state.auth.email);
   const deleteData = async () => {
     try {
@@ -26,14 +27,21 @@ const ExpenseItem = (props) => {
     props.onDelete(props.id);
   };
   return (
-    <Card className="mb-2">
+    <Card
+      className="mb-2"
+      style={{
+        backgroundColor: darkMode ? "black" : "white",
+        color: darkMode ? "white" : "black",
+      }}
+    >
       <Card.Body className="d-flex justify-content-between align-items-center">
         <div>
           <Card.Title>{props.description}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">
+          <Card.Text>
             Category: {props.category}
-          </Card.Subtitle>
-          <Card.Text>Amount: ₹{props.amount.toFixed(2)}</Card.Text>
+            <div style={{ marginBottom: ".4rem" }}></div>
+            Amount: ₹{props.amount.toFixed(2)}
+          </Card.Text>
         </div>
         <div>
           <Button variant="outline-primary" className="mx-1" onClick={onEdit}>

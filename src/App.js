@@ -5,7 +5,6 @@ import { authActions } from "./store/auth";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loading from "./UI/Loading";
-
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -15,6 +14,7 @@ import Profile from "./pages/Profile";
 import { useState } from "react";
 
 function App() {
+  const darkMode = useSelector((state) => state.darkMode.darkMode);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   // useffect for user validation
@@ -32,22 +32,27 @@ function App() {
             `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.REACT_APP_API_KEY}`,
             { idToken: token }
           );
-          setLoading(false);
-          // storing the token into redux store
           dispatch(
             authActions.login({
               token: token,
               email: removeSpecialCharacters(data.users[0].email),
             })
           );
+          const res = await axios.get(
+            `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${removeSpecialCharacters(
+              data.users[0].email
+            )}/premium.json`
+          );
+          if (res.data) {
+            dispatch(authActions.setPremium(true));
+          }
+          setLoading(false);
         } catch (error) {
           console.log(error);
           toast.error("something went wrong");
         }
       }
     };
-
-    // calling the above function to validate the user
     validateUser(token);
   }, []);
 
@@ -55,7 +60,13 @@ function App() {
 
   if (loading) return <Loading />;
   return (
-    <>
+    <div
+      style={{
+        backgroundColor: darkMode ? "black" : "white",
+        color: darkMode ? "white" : "black",
+        height: "100vh",
+      }}
+    >
       <Header />
       <Switch>
         <Route path="/" exact>
@@ -82,7 +93,7 @@ function App() {
           </Route>
         )}
       </Switch>
-    </>
+    </div>
   );
 }
 

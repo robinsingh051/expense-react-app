@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 const UpdateProfile = (props) => {
+  const darkMode = useSelector((state) => state.darkMode.darkMode);
   const token = useSelector((state) => state.auth.token);
   const [isLoading, setIsLoading] = useState(false);
 

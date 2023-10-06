@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 const ExpenseList = (props) => {
   const items = useSelector((state) => state.expenses.items);
-  console.log(items);
   const expenses = items.map((item) => {
     return (
       <ExpenseItem

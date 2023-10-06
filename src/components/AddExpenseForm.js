@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 const AddExpenseForm = (props) => {
+  const darkMode = useSelector((state) => state.darkMode.darkMode);
   const email = useSelector((state) => state.auth.email);
 
   const amountInputRef = useRef();
@@ -51,9 +52,17 @@ const AddExpenseForm = (props) => {
           width: "25rem",
           padding: ".5rem",
           border: "0",
+          backgroundColor: darkMode ? "black" : "white",
+          color: darkMode ? "white" : "black",
         }}
       >
-        <Card style={{ border: "0" }}>
+        <Card
+          style={{
+            border: "0",
+            backgroundColor: darkMode ? "black" : "white",
+            color: darkMode ? "white" : "black",
+          }}
+        >
           <Card.Body className="text-center">
             <h5 style={{ marginBottom: "1rem" }}>Add Expense</h5>
             <Form onSubmit={submitHandler}>
