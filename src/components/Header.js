@@ -6,6 +6,7 @@ import { authActions } from "../store/auth";
 import { darkModeActions } from "../store/darkMode";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { IoMdWallet } from "react-icons/io";
 
 const Header = (props) => {
   const items = useSelector((state) => state.expenses.items);
@@ -78,6 +79,9 @@ const Header = (props) => {
       bg={darkMode ? "light" : "dark"}
       variant={darkMode ? "light" : "dark"}
     >
+      <Navbar.Brand style={{ marginLeft: "1rem" }}>
+        <IoMdWallet className="me-2" /> Expense Tracker
+      </Navbar.Brand>
       <Container>
         <Nav className="me-auto" variant={darkMode ? "light" : "dark"}>
           {isLoggedIn && (
